@@ -21,7 +21,7 @@ module gripGT2(H,zi)
     
     difference()
     {
-        cube([9,11,H]);
+        cube([9,12,H]);
         translate([-1,11/2-1,H-zi]) cube([12,2,zi+2]);
     }
     translate([0,11/2-1,H-zi]) cube([1,0.8,zi]);
@@ -39,7 +39,7 @@ module main()
 difference()
 {
     cube([Wbase,Lbase,Hbase ]);
-    translate([-1,Lbase/2-Wbearings/2,0]) 
+    translate([-1,Lbase/2-Wbearings/2,0])  
     {
         rotate([0,90,0]) cylinder(h=100,d=Dbearing-4);
     }
@@ -101,8 +101,8 @@ difference()
      translate([Wbase/2+5,Lbase-4,-1]) cylinder(h=30,d=3.6);
 }
 
-translate([0,Lbase/2,10]) gripGT2(12+3,7);
-    translate([Wbase-9,Lbase/2,10]) gripGT2(12+3,7);
+translate([0,Lbase/2-6+6.36,6]) gripGT2(12+3,7);
+    translate([Wbase-9,Lbase/2-6+6.36,6]) gripGT2(12+3,7);
 
 }
 main();

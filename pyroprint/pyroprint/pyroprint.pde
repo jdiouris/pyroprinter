@@ -12,6 +12,7 @@ int lightGray=190;
 String welcome = "Welcome to Pyroprint v0.1";
 
 String message="";
+int tempMessage=0;
 
 String mmenu[]={"LOAD","ORIGIN","PRINT","JOG","CONF","QUIT"};
 
@@ -87,6 +88,7 @@ void printLine(int i)
 
 void setup()
 {
+  setMessage(welcome);
   img=loadImage("nantes.jpg");
   int w=img.width;
   int h=img.height;
@@ -99,10 +101,38 @@ void setup()
   printLine(10);
 }
 
+void setMessage(String s)
+{
+  message=s;
+  tempMessage=100;
+}
 void draw() {
   background(60);
   //ellipse(mouseX, mouseY, 33, 33);
   menu();
   
   image(img,100,100);
+  // Message
+  textSize(20);
+  fill(255);
+  if (tempMessage>0) 
+  {
+    tempMessage--;
+    text(message,10,height-10);
+  }
+}
+
+void mousePressed() {
+ 
+   int nm=testMenu(mouseX,mouseY);
+   print(nm);
+   // Menu
+   if (nm!=0)
+   {
+     String menu=mmenu[nm-1];
+      if (menu.equals("LOAD")) setMessage("LOAD");
+      else if (menu.equals("ORIGIN")) setMessage("ORIGIN");
+      else if (menu.equals("PRINT")) setMessage("PRINT");
+      else if (menu.equals("QUIT")) exit();
+   }
 }

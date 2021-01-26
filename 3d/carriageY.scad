@@ -8,6 +8,7 @@ Hbase=17;
 Dtige=8+0.1;
 detiges=40;
 $fn=100;
+Left=0;
 
 wvismot=31;
 
@@ -25,7 +26,8 @@ difference()
     union()
     {
     cube([Wbase,Lbase,Hbase]);
-    translate([0,Lbase-20,-3.9]) cube([Wbase,20,4]);    
+    translate([0,Lbase-20,-3.9]) cube([Wbase,20,4]);
+    translate([0,-9,8]) cube([Wbase,Lbase,Hbase-8]);     
     }
     translate([-1,6+Dbearing/2,8]) rotate([0,90,0]) cylinder(h=100,d=Dbearing-4);
     
@@ -39,8 +41,7 @@ difference()
     
     translate([(Wbase-detiges)/2,Lbase-20.1,6]) rotate([-90,0,0]) cylinder(h=100,d=Dtige);
     translate([(Wbase-detiges)/2+detiges,Lbase-20.1,6]) rotate([-90,0,0]) cylinder(h=100,d=Dtige);
-  //  translate([Wbase/2-26/2,32,-4])  cylinder(h=100,d=3.5);
-   //  translate([Wbase/2+26/2,32,-4])  cylinder(h=100,d=3.5);
+
     
     translate([(Wbase-detiges)/2,Lbase-20.1,-4]) cube([1,25, 10]);
     translate([(Wbase-detiges)/2+detiges,Lbase-20.1,-4]) cube([1,25, 10]);
@@ -53,19 +54,32 @@ difference()
      translate([(Wbase-26)/2+26-1,Lbase-8,0])
      rotate([0,90,0])  cylinder(h=3,r=5.5/2/cos(180/6) + 0.2,$fn=6);
      
+     if (Left==1)
+     {
     translate([Wbase/2-5,Lbase-7,0]) cylinder(h=100,d=3.6);
      translate([Wbase/2+5,Lbase-7,0]) cylinder(h=100,d=3.6);
      translate([Wbase/2-5,Lbase-7,Hbase-4]) cylinder(h=10,d=6);
      translate([Wbase/2+5,Lbase-7,Hbase-4]) cylinder(h=10,d=6);
+     }
+     else 
+     {
+         translate([Wbase/2,Lbase-7,0]) cylinder(h=100,d=3.6);
+          translate([Wbase/2,Lbase-7,0]) cylinder(h=10, d=8, $fn=6);
+     }
      
      // Vis support moteur
-     translate([Wbase/2,Lbase/2-5,0])
+     translate([Wbase/2,Lbase/2-10,17-5])
      {
-    translate([-wvismot/2,-wvismot/2,0]) cylinder(h=100,d=3.6);
-     translate([+wvismot/2,-wvismot/2,0]) cylinder(h=100,d=3.6);
-         translate([-wvismot/2,wvismot/2,0]) cylinder(h=100,d=3.6);
-     translate([+wvismot/2,wvismot/2,0]) cylinder(h=100,d=3.6);
+    translate([-wvismot/2,-wvismot/2,0]) cylinder(h=10,d=4);
+     translate([+wvismot/2,-wvismot/2,0]) cylinder(h=10,d=4);
+         translate([-wvismot/2,wvismot/2,0]) cylinder(h=10,d=4);
+     translate([+wvismot/2,wvismot/2,0]) cylinder(h=10,d=4);
      }
+     
+      translate([-1,-2,10])  cube([10,7,2.5]);
+      translate([3,-2,7])  cube([5,7,5]);
+     
+     translate([Wbase-9,-2,10])  cube([10,7,2.5]);
+      translate([Wbase-7,-2,7])  cube([5,7,5]);
 }
 
-//translate([0,0,-7]) cube([6,6,15]);
