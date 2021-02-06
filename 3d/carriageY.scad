@@ -5,10 +5,10 @@ Wbearings=42;
 Wbase=2*Lbearing+6;
 Lbase=48;
 Hbase=17;
-Dtige=8+0.1;
+Dtige=8+0.4;
 detiges=40;
 $fn=100;
-Left=0;
+Left=1;
 
 wvismot=31;
 
@@ -64,16 +64,16 @@ difference()
      else 
      {
          translate([Wbase/2,Lbase-7,0]) cylinder(h=100,d=3.6);
-          translate([Wbase/2,Lbase-7,0]) cylinder(h=10, d=8, $fn=6);
+          translate([Wbase/2,Lbase-7,0]) cylinder(h=10, d=7, $fn=6);
      }
      
      // Vis support moteur
      translate([Wbase/2,Lbase/2-10,17-5])
      {
-    translate([-wvismot/2,-wvismot/2,0]) cylinder(h=10,d=4);
-     translate([+wvismot/2,-wvismot/2,0]) cylinder(h=10,d=4);
-         translate([-wvismot/2,wvismot/2,0]) cylinder(h=10,d=4);
-     translate([+wvismot/2,wvismot/2,0]) cylinder(h=10,d=4);
+    translate([-wvismot/2-8,-wvismot/2,0]) cylinder(h=10,d=4);
+     translate([+wvismot/2+8,-wvismot/2,0]) cylinder(h=10,d=4);
+         translate([-wvismot/2-8,wvismot/2,0]) cylinder(h=10,d=4);
+     translate([+wvismot/2+8,wvismot/2,0]) cylinder(h=10,d=4);
      }
      
       translate([-1,-2,10])  cube([10,7,2.5]);

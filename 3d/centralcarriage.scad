@@ -1,5 +1,5 @@
 Dbearing=15+0.4;
-Lbearing=24+0.2;
+Lbearing=24+0.4;
 
 Wbearings=40;
 Wbase=2*Lbearing+6;
@@ -85,24 +85,27 @@ difference()
     }
 
 // Vis 
-    translate([-1,Lbase/2-5,5]) 
-     rotate([0,90,0]) cylinder(h=10,d=1.5);
-     translate([-1,Lbase/2+5,5]) 
-     rotate([0,90,0]) cylinder(h=10,d=1.5);
-    translate([Wbase-9,Lbase/2-5,5]) 
-     rotate([0,90,0]) cylinder(h=10,d=1.5);
-     translate([Wbase-9,Lbase/2+5,5]) 
-     rotate([0,90,0]) cylinder(h=10,d=1.5);
+//    translate([-1,Lbase/2-5,5]) 
+//     rotate([0,90,0]) cylinder(h=10,d=1.5);
+//     translate([-1,Lbase/2+5,5]) 
+//     rotate([0,90,0]) cylinder(h=10,d=1.5);
+//    translate([Wbase-9,Lbase/2-5,5]) 
+//     rotate([0,90,0]) cylinder(h=10,d=1.5);
+//     translate([Wbase-9,Lbase/2+5,5]) 
+//     rotate([0,90,0]) cylinder(h=10,d=1.5);
     // autre
     
     translate([Wbase/2-5,4,-1]) cylinder(h=30,d=3.6);
      translate([Wbase/2+5,4,-1]) cylinder(h=30,d=3.6);
     translate([Wbase/2-5,Lbase-4,-1]) cylinder(h=30,d=3.6);
      translate([Wbase/2+5,Lbase-4,-1]) cylinder(h=30,d=3.6);
+    // trous attache
+    translate([5,Lbase/2+6.36,-1]) cylinder(h=30,d=3.6);
+    translate([Wbase-5,Lbase/2+6.36,-1]) cylinder(h=30,d=3.6);
 }
 
-translate([0,Lbase/2-6+6.36,6]) gripGT2(12+3,7);
-    translate([Wbase-9,Lbase/2-6+6.36,6]) gripGT2(12+3,7);
+//translate([0,Lbase/2-6+6.36,6]) gripGT2(12+3,7);
+//   translate([Wbase-9,Lbase/2-6+6.36,6]) gripGT2(12+3,7);
 
 }
 main();

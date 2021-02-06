@@ -3,6 +3,7 @@ W=42;
 dmot=35;
 P=38-13;
 $fn=100;
+Wbase=2*(24.2)+6;
 
 module roundedCube(L,W,H,D)
 {
@@ -23,12 +24,23 @@ module coin(W,P,H)
 rotate([0,-90,0]) 
 difference()
 {
+    union()
+    {
     roundedCube(W,W,P,5);
+    translate([0,(W-Wbase)/2,0]) roundedCube(W,Wbase,5,5);    
+    }
     ew=(W-wvis)/2;
     translate([ew,ew,-1]) cylinder(h=100,d=3.4);
      translate([W-ew,ew,-1]) cylinder(h=100,d=3.4);
      translate([W-ew,W-ew,-1]) cylinder(h=100,d=3.4);
      translate([ew,W-ew,-1]) cylinder(h=100,d=3.4);
+    
+    
+    translate([ew,ew-8,-1]) cylinder(h=10,d=3.4);
+     translate([W-ew,ew-8,-1]) cylinder(h=10,d=3.4);
+     translate([W-ew,W-ew+8,-1]) cylinder(h=10,d=3.4);
+     translate([ew,W-ew+8,-1]) cylinder(h=10,d=3.4);
+    
     translate([W/2,W/2,-1]) cylinder(h=100,d=dmot);
     
     translate([0,0,ew]) coin(10,10,P-2*ew);

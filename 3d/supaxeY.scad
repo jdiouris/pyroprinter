@@ -1,7 +1,7 @@
 H=36;
-Dtige=8+0.1;
+Dtige=8+0.2;
 
-W=20;
+W=15;
 $fn=100;
 epate=10;
 Hpoulie=30;
@@ -27,5 +27,5 @@ cube([W,W,H]);
     translate([W+epate/2,W-5,-1]) cylinder(h=100, d=3.4);
     
     translate([-1,W/2,Hpoulie]) rotate([0,90,0]) cylinder(h=100, d=3.4);
-    translate([W-7,W/2,Hpoulie]) rotate([0,90,0]) cylinder(h=10, d=8, $fn=6);
+    translate([W-4,W/2,Hpoulie]) rotate([0,90,0]) cylinder(h=10, d=7, $fn=6);
 }
