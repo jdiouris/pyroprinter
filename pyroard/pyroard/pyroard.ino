@@ -54,7 +54,7 @@ void setup()
 //  for (int i=0; i<50; i++) 
 //  {
 //    forwardLine();
-//    delay(100);
+//    delay(1000);
 //  }
 
 
@@ -119,12 +119,9 @@ void backY()
 void forwardLine()
 {
   int ds=100;
-  int dsMax=1000;
-  int dsMin=100;
-  int pds=(dsMin-dsMax)/SPP;
-  ds=dsMax;
+
   forwardY();
-    for(int x = 0; x < 2*SPP; x++)
+    for(int x = 0; x < SPP; x++)
   {
     //digitalWrite(StepPinY, HIGH);
     digitalWrite(&PORTD,3,1);
@@ -132,7 +129,6 @@ void forwardLine()
     //digitalWrite(StepPinY, LOW);
     digitalWrite(&PORTD,3,0);
     delayMicroseconds(ds);
-    if (x<SPP) ds-=pds; else ds+=pds;
   }
   
 }

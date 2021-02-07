@@ -208,9 +208,8 @@ void draw() {
      text("  Remaining time : "+int(avLineTime*(iHeight-nLine)/1000/60)+" mn",600,260);
      if (ok) 
      {
-     nLine++;
    avLineTime=((nLine-1)*avLineTime+(millis()-t1))/nLine;
-   if (nLine>iHeight) fprint=0;printLine(nLine);
+   if (nLine>iHeight) fprint=0;
    printLine(nLine);
      }
   }
