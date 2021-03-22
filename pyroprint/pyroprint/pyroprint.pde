@@ -15,7 +15,7 @@ String welcome = "Welcome to Pyroprint v0.1";
 String message="";
 int tempMessage=0;
 
-String mmenu[]={"LOAD","ROT","PRINT","PAUSE","STOP","CAL","QUIT"};
+String mmenu[]={"LOAD","PRINT","STOP","CAL","QUIT"};
 
 PImage img;
 PImage imghres;
@@ -28,6 +28,14 @@ int iHeight;                // Height of image in pixels
 
 float stepX=0.2;
 float  stepY=0.2;
+float printTime;
+String endHour;
+
+// Values used to calculate printing time
+// must be the same in Arduino program
+float Vmax=0.160;   // m/s
+float Vmin=0.006; // m/s
+float gamma=1.7;   
 
 Serial   serial;
 boolean ok;
@@ -35,6 +43,7 @@ int nLine;
 int fprint;
 
 float avLineTime;
+int t0;
 int t1;
 boolean fsend=true;
 
@@ -83,7 +92,7 @@ int greyLevel(color c)
   float b=blue(c);
   
   float n=sqrt(r*r+g*g+b*b)/sqrt(3);;
-  print(c);
+ // print(c);
   return int(n);
 }
 
@@ -108,6 +117,49 @@ void dispImage(int i)
    }
   
 }
+
+String fmn(float t)
+{
+  int mn=int(t/60);
+  int h=int(mn/60);
+  mn=mn-60*h;
+  return ""+h+"h "+mn+" mn";
+}
+
+String endTime(float t)
+{
+  int h0=hour();
+  int m0=minute();
+  
+  t=t+m0*60+3600*h0;
+  
+  int mn=int(t/60);
+  int h=int(mn/60);
+  mn=mn-60*h;
+  if (h>23) h-=24;
+  return ""+h+"h "+mn+" mn";
+  
+}
+
+float printingTime()
+{
+  float t=0;
+  float V[]= new float[16];
+  for (int i=0; i<16; i++)
+  {
+       V[i]=pow((i/15.0),gamma)*(Vmax-Vmin)+Vmin;
+  }
+  for (int i=0; i<iHeight; i++)
+  for (int j=0;j<iWidth; j++)
+  {
+    color  c=imghres.get(j,i);
+    int c1=greyLevel(c)/16;
+    t=t+stepX*1e-3/V[c1];
+  }
+ t=t+iHeight*(stepX*1e-3/V[15])*iWidth;
+  return t;
+}
+
 void printLine(int i)
 {
   color c;
@@ -130,7 +182,11 @@ void printLine(int i)
   // delay(500);
    nLine++;
    avLineTime=((nLine-1)*avLineTime+(millis()-t1))/nLine;
-   if (nLine>iHeight) fprint=0;
+   if (nLine>iHeight) 
+   {
+     fprint=0;
+     serial.write('S');
+   }
    if (!fsend) ok=true;
 }
 
@@ -147,19 +203,39 @@ void newImage(String name)
   pWidth=iWidth*stepX;
   pHeight=iHeight*stepY;
   println(iWidth+" "+iHeight+" ");
+  printTime=printingTime();
 }
+
+void fileSelectedLoad(File selection) {
+
+  if (selection == null) {
+    println("Window was closed or the user hit cancel.");
+  } else {
+    println("User selected " + selection.getAbsolutePath());
+    String nFile=selection.getAbsolutePath();
+    println("File : "+nFile);
+    setMessage("Loading "+nFile);
+    newImage(nFile);
+  }
+}
+
+void fileLoad()
+{
+  selectInput("Select a file", "fileSelectedLoad");
+}
+
 
 void setup()
 {
   setMessage(welcome);
-  newImage("portrait.jpg");
+  newImage("cal.jpg");
   //printLine(10);
   print( Serial.list());
    
   
    if (fsend)
    {
-   String portName = Serial.list()[3]; //change the 0 to a 1 or 2 etc. to match your port
+   String portName = Serial.list()[0]; //change the 0 to a 1 or 2 etc. to match your port
    
    serial = new Serial(this, portName, 115200);
    }
@@ -180,6 +256,8 @@ void marqueur(int nline)
   triangle(90,i-5,99,i,90,i+5);
 }
 
+
+
 void draw() {
   background(60);
   //ellipse(mouseX, mouseY, 33, 33);
@@ -191,6 +269,7 @@ void draw() {
   fill(255);
   text("Width : "+pWidth+" mm",600,120);
   text("Height : "+pHeight+" mm",600,140);
+  text("Printing time : "+fmn(printTime),600,160);
   if (tempMessage>0) 
   {
     tempMessage--;
@@ -205,11 +284,14 @@ void draw() {
      fill(255);
      text("  Line "+nLine+"/"+iHeight,600,220);
      text("  Av line time : "+int(avLineTime)+" ms",600,240);
-     text("  Remaining time : "+int(avLineTime*(iHeight-nLine)/1000/60)+" mn",600,260);
+     text("  Remaining time : "+fmn(avLineTime*(iHeight-nLine)/1000),600,260);
+     text("  Remaining time : "+fmn((printTime-1e-3*(millis()-t0))),600,280);
+     text("  End time : "+endHour,600,300);
+     
      if (ok) 
      {
    avLineTime=((nLine-1)*avLineTime+(millis()-t1))/nLine;
-   if (nLine>iHeight) fprint=0;
+   if (nLine>iHeight) { fprint=0; serial.write('S'); }
    printLine(nLine);
      }
   }
@@ -224,7 +306,7 @@ void mousePressed() {
    if (nm!=0)
    {
      String menu=mmenu[nm-1];
-      if (menu.equals("LOAD")) setMessage("LOAD");
+      if (menu.equals("LOAD")) fileLoad(); 
       else if (menu.equals("ROT")) setMessage("ROTATION");
       else if (menu.equals("PRINT")) 
       {
@@ -232,9 +314,11 @@ void mousePressed() {
         nLine=0;
         fprint=1;
         avLineTime=0;
+        endHour=endTime(printTime);
+        t0=millis();
         printLine(nLine);
       }
-      else if (menu.equals("STOP")) fprint=0;
+      else if (menu.equals("STOP")) { fprint=0; serial.write('S'); }
       else if (menu.equals("CAL")) newImage("cal.jpg");
       else if (menu.equals("QUIT")) exit();
    }

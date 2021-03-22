@@ -10,12 +10,18 @@ const int SPP=32; // Steps per pixel
 
 int speeds[16];
 
-const int Vmin=500;
-const int Vmax=40;
+const int TVmax=40;
+
+float Vmax=0.160;   // m/s
+float Vmin=0.006; // m/s
+float gamma=1.7;
 
 unsigned char pixels[1000];
 int Npixels;
 char val;
+
+int roundTrip=0;    // 1 if round-trip
+int evenLine;
 
 void digitalWrite(volatile uint8_t *port, uint8_t rang, uint8_t valeur)
 {
@@ -25,8 +31,14 @@ void digitalWrite(volatile uint8_t *port, uint8_t rang, uint8_t valeur)
 
 void initSpeeds()
 {
+  
   for (int i=0; i<16; i++)
-  speeds[i]=Vmin+i*(Vmax-Vmin)/15;
+  {
+      float V=pow(((i)/15.0),gamma)*(Vmax-Vmin)+Vmin;
+      speeds[i]=int(40e-3/(2*V*200*32)*1e6);
+      Serial.println(speeds[i]);
+  }
+  
 }
 
 void motorsOn()
@@ -61,6 +73,7 @@ void setup()
   
   
   motorsOff();
+  evenLine=0;
 }
 
 void printLine()
@@ -69,17 +82,56 @@ void printLine()
   Serial.print(Npixels); 
   Serial.println(" pixels");
   motorsOn();
-  forwardX();
-  for (int i=0; i<Npixels/2; i++) 
+  
+  if ((roundTrip==1)&&(evenLine==1))
   {
+    backX();
+    for (int i=Npixels/2-1; i>=0; i--) 
+    {
+     drawPixel(speeds[pixels[i]>>4]);
+     drawPixel(speeds[pixels[i]&0x0F]);
+    }
+    for (int i=1; i<100; i++) drawPixel(speeds[15]);
+    forwardX();
+    for (int i=1; i<50; i++) drawPixel(speeds[4]);
+    backX();
+    for (int i=1; i<50; i++) drawPixel(speeds[4]);
+    forwardX();
+    for (int i=1; i<50; i++) drawPixel(speeds[4]);
+    backX();
+    for (int i=1; i<50; i++) drawPixel(speeds[4]);
+    
+  }
+  else 
+  {
+    forwardX();
+    for (int i=1; i<100; i++) drawPixel(speeds[15]);
+    for (int i=0; i<Npixels/2; i++) 
+    {
       drawPixel(speeds[pixels[i]&0x0F]);
       drawPixel(speeds[pixels[i]>>4]);
+    }
   }
-  backX();
-  for (int i=0; i<Npixels; i++) drawPixel(Vmax);
-  delay(100);
+
+  if (roundTrip==0) 
+  {
+    backX();
+    for (int i=0; i<Npixels; i++) drawPixel(TVmax);  
+    for (int i=1; i<100; i++) drawPixel(speeds[15]);
+    forwardX();
+    for (int i=1; i<50; i++) drawPixel(speeds[4]);
+    backX();
+    for (int i=1; i<50; i++) drawPixel(speeds[4]);
+    forwardX();
+    for (int i=1; i<50; i++) drawPixel(speeds[4]);
+    backX();
+    for (int i=1; i<50; i++) drawPixel(speeds[4]);
+    
+  }
+  delay(1);
   forwardLine();
-  delay(100);
+  delay(1);
+  if (evenLine==0) evenLine=1; else evenLine=0;
 }
 
 void drawPixel(int ds)
@@ -156,6 +208,15 @@ void loop()
      if (val=='L') { Npixels=0; etat=LN0; }
      else if (val==';') { printLine(); Serial.println('@'); etat=ATT; }
      else if (etat==LN0) { pixels[Npixels/2]=conv(val); etat=LN1; Npixels++;}
-      else if (etat=-LN1) { pixels[Npixels/2]+=conv(val)<<4; etat=LN0; Npixels++;}               
+      else if (etat==LN1) { pixels[Npixels/2]+=conv(val)<<4; etat=LN0; Npixels++;}  
+      else if (val=='S') { 
+        if (roundTrip==1) if (evenLine==1) {
+          backX();
+          for (int i=0; i<Npixels; i++) drawPixel(TVmax); 
+          for (int i=1; i<100; i++) drawPixel(speeds[15]);
+          
+        }
+        motorsOff(); 
+      }             
     }
 }
